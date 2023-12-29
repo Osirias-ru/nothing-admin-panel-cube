@@ -24,7 +24,7 @@ scene.hears(/.*/, async (ctx) => {
   if (ctx.scene.state.nextStep === "awaitingName") {
     const promoData = await getPromoCode(ctx.message.text);
     const promoCode = ctx.message.text;
-    if(!promoData.activations) {
+    if(!promoData) {
       await ctx.reply(
         `Промокода "${ctx.message.text}" не существует`,
       );

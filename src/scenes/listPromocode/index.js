@@ -21,7 +21,7 @@ async function canNavigatePrev(ctx) {
 
 scene.action("home", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("start");
+  ctx.scene.enter("managePromo");
 });
 
 scene.action("nextPage", async (ctx) => {
@@ -58,14 +58,14 @@ async function sendPromoCodes(ctx) {
       const updatedKeyboard = Markup.inlineKeyboard([
         [
           Markup.button.callback(
-            "Следующая страница",
-            "nextPage",
-            !canNavigateNextValue
-          ),
-          Markup.button.callback(
             "Предыдущая страница",
             "prevPage",
             !canNavigatePrevValue
+          ),
+          Markup.button.callback(
+            "Следующая страница",
+            "nextPage",
+            !canNavigateNextValue
           ),
         ],
         [Markup.button.callback("Назад", "home")],

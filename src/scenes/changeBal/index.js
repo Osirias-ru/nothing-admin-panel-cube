@@ -16,7 +16,7 @@ scene.enter((ctx) => {
 scene.action("home", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  ctx.scene.enter("start");
+  ctx.scene.enter("manageUsers");
 });
 
 scene.hears(/.*/, async (ctx) => {
@@ -25,10 +25,10 @@ scene.hears(/.*/, async (ctx) => {
     const userDB = await searchUser(user);
     if (userDB === false) {
       await ctx.reply(`Не удалось найти пользователя ${user}`);
-      return ctx.scene.enter("start");
+      return ctx.scene.enter("manageUsers");
     } else if (!userDB) {
       await ctx.reply(`Произошла ошибка при поиске пользователя ${user}`);
-      return ctx.scene.enter("start");
+      return ctx.scene.enter("manageUsers");
     }
     ctx.scene.state.nextStep = "awaitingInfo";
 
@@ -47,16 +47,16 @@ scene.hears(/.*/, async (ctx) => {
         "Введите соообщение в формате <кол-во монет>"
       );
     }
-    await changeRolls(ctx, rolls);
+    await changeBal(ctx, rolls);
   }
 });
 
-async function changeRolls(ctx, coins) {
+async function changeBal(ctx, coins) {
   const newCoins = await updateBal(ctx.session.user.tg_id, coins);
   if (newCoins === null) {
-    await ctx.reply(`Не удалось изменить броски\nПроверьте консоль`);
+    await ctx.reply(`Не удалось изменить баланс\nПроверьте консоль`);
     ctx.scene.state.nextStep = "awaitingName";
-    return ctx.scene.enter("start");
+    return ctx.scene.enter("manageUsers");
   }
   await ctx.reply(
     `Пользователю ${
@@ -66,7 +66,7 @@ async function changeRolls(ctx, coins) {
     } изменен баланс!\nКоличество монеток: ${newCoins}`
   );
   ctx.scene.state.nextStep = "awaitingName";
-  ctx.scene.enter("start");
+  ctx.scene.enter("manageUsers");
 }
 
 module.exports = scene;

@@ -7,46 +7,27 @@ scene.enter((ctx) => {
 
   const keyboard = Markup.inlineKeyboard([
     [
-      Markup.button.callback("Создать промокод", "createPromo"),
-      Markup.button.callback("Удалить промокод", "removePromo"),
-      Markup.button.callback("Список промокодов", "listPromo"),
+      Markup.button.callback("Статистика", "onDev"),
     ],
     [
-      Markup.button.callback("Добавить подписку", "addSub"),
+      Markup.button.callback("Управление", "manage"),
     ],
     [
-      Markup.button.callback("Изменить броски", "changeRolls"),
-      Markup.button.callback("Изменить баланс", "changeBal"),
+      Markup.button.callback("Рассылка", "onDev"),
     ],
   ]);
 
   ctx.reply(message, keyboard);
 });
 
-scene.action("createPromo", async (ctx) => {
+scene.action("onDev", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("createPromo");
+  ctx.scene.enter("onDev");
 });
 
-scene.action("removePromo", async (ctx) => {
+scene.action("manage", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("removePromo");
-});
-scene.action("listPromo", async (ctx) => {
-  await ctx.deleteMessage();
-  ctx.scene.enter("listPromo");
-});
-scene.action("addSub", async (ctx) => {
-  await ctx.deleteMessage();
-  ctx.scene.enter("addSub");
-});
-scene.action("changeRolls", async (ctx) => {
-  await ctx.deleteMessage();
-  ctx.scene.enter("changeRolls");
-});
-scene.action("changeBal", async (ctx) => {
-  await ctx.deleteMessage();
-  ctx.scene.enter("changeBal");
+  ctx.scene.enter("manage");
 });
 
 module.exports = scene;

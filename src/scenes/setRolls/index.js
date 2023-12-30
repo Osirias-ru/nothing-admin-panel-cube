@@ -1,7 +1,7 @@
 const { Markup, Scenes } = require("telegraf");
-const { searchUser, updateRolls } = require("../../database");
+const { searchUser, setRolls } = require("../../database");
 
-const scene = new Scenes.BaseScene("changeRolls");
+const scene = new Scenes.BaseScene("setRolls");
 const keyboard = Markup.inlineKeyboard([
   [Markup.button.callback("Отмена", "home")],
 ]);
@@ -35,7 +35,7 @@ scene.hears(/.*/, async (ctx) => {
     ctx.session.user = userDB;
 
     await ctx.reply(
-      `Введите число для изменения текущих бросков\nЕсли вы хотите забрать броски, то поставте перед числом -`,
+      `Введите число для изменения бросков`,
     );
   } else if (ctx.scene.state.nextStep === "awaitingInfo") {
     const inputText = ctx.message.text;
@@ -52,7 +52,7 @@ scene.hears(/.*/, async (ctx) => {
 });
 
 async function changeRolls(ctx, rolls) {
-  const newRolls = await updateRolls(ctx.session.user.tg_id, rolls);
+  const newRolls = await setRolls(ctx.session.user.tg_id, rolls);
   if (newRolls === null) {
     await ctx.reply(`Не удалось изменить броски\nПроверьте консоль`);
     ctx.scene.state.nextStep = "awaitingName";

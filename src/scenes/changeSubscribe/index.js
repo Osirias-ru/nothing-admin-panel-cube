@@ -1,7 +1,7 @@
 const { Markup, Scenes } = require("telegraf");
 const { searchUser, updateVipStatus } = require("../../database");
 
-const scene = new Scenes.BaseScene("addSub");
+const scene = new Scenes.BaseScene("changeSub");
 const keyboard = Markup.inlineKeyboard([
   [Markup.button.callback("Отмена", "home")],
 ]);
@@ -27,7 +27,7 @@ scene.enter((ctx) => {
 scene.action("home", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  ctx.scene.enter("start");
+  ctx.scene.enter("manageUsers");
 });
 
 scene.action("add-7", async (ctx) => {
@@ -62,17 +62,17 @@ scene.hears(/.*/, async (ctx) => {
     const userDB = await searchUser(user);
     if (userDB === false) {
       await ctx.reply(`Не удалось найти пользователя ${user}`);
-      return ctx.scene.enter("start");
+      return ctx.scene.enter("manageUsers");
     } else if (!userDB) {
       await ctx.reply(`Произошла ошибка при поиске пользователя ${user}`);
-      return ctx.scene.enter("start");
+      return ctx.scene.enter("manageUsers");
     }
     ctx.scene.state.nextStep = "awaitingInfo";
 
     ctx.session.user = userDB;
 
     await ctx.reply(
-      `Выберите на сколько дней нужно выдать подписку\nВы можете также ввести любой срок, написав кол-во дней числом`,
+      `Выберите на сколько дней нужно выдать подписку\nВы можете также ввести любой срок, написав кол-во дней числом. Чтобы вычесть дни подписки добавть перед чилом -`,
       subKeyboard
     );
   } else if (ctx.scene.state.nextStep === "awaitingInfo") {
@@ -93,19 +93,19 @@ scene.hears(/.*/, async (ctx) => {
 async function addSub(ctx, days) {
   const newSubDays = await updateVipStatus(ctx.session.user.tg_id, days);
   if (newSubDays === null) {
-    await ctx.reply(`Не удалось добавить подписку\nПроверьте консоль`);
+    await ctx.reply(`Не удалось изменить дни подписки\nПроверьте консоль`);
     ctx.scene.state.nextStep = "awaitingName";
-    return ctx.scene.enter("start");
+    return ctx.scene.enter("manageUsers");
   }
   await ctx.reply(
     `Пользователю ${
       ctx.session.user.nickname
         ? ctx.session.user.nickname
         : ctx.session.user.tg_id
-    } добавлены дни подписки!\nКоличество дней: ${newSubDays}`
+    } изменены дни подписки!\nКоличество дней: ${newSubDays}`
   );
   ctx.scene.state.nextStep = "awaitingName";
-  ctx.scene.enter("start");
+  ctx.scene.enter("manageUsers");
 }
 
 module.exports = scene;

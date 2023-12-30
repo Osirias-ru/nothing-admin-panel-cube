@@ -8,7 +8,7 @@ scene.enter((ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback("Отмена", "home")],
+    [Markup.button.callback("Назад", "home")],
   ]);
 
   ctx.reply(message, keyboard);
@@ -17,7 +17,7 @@ scene.enter((ctx) => {
 scene.action("home", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  ctx.scene.enter("start");
+  ctx.scene.enter("managePromo");
 });
 
 scene.hears(/.*/, async (ctx) => {
@@ -28,7 +28,7 @@ scene.hears(/.*/, async (ctx) => {
       await ctx.reply(
         `Промокода "${ctx.message.text}" не существует`,
       );
-      return ctx.scene.enter("start");
+      return ctx.scene.enter("managePromo");
     }
     ctx.scene.state.nextStep = promoCode;
 
@@ -53,7 +53,7 @@ scene.action("confirmRemove", async (ctx) => {
   await removePromoCode(promoCode);
   if (!removePromoCode)
     ctx.reply(`Не удалось удалить промокод ${promoCode}. Проверьте консоль`);
-  ctx.scene.enter("start");
+  ctx.scene.enter("managePromo");
 });
 
 module.exports = scene;

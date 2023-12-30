@@ -1,7 +1,7 @@
 const { Markup, Scenes } = require("telegraf");
-const { searchUser, updateRolls } = require("../../database");
+const { searchUser, setBal } = require("../../database");
 
-const scene = new Scenes.BaseScene("changeRolls");
+const scene = new Scenes.BaseScene("setBal");
 const keyboard = Markup.inlineKeyboard([
   [Markup.button.callback("Отмена", "home")],
 ]);
@@ -35,7 +35,7 @@ scene.hears(/.*/, async (ctx) => {
     ctx.session.user = userDB;
 
     await ctx.reply(
-      `Введите число для изменения текущих бросков\nЕсли вы хотите забрать броски, то поставте перед числом -`,
+      `Введите число для изменения монеток`,
     );
   } else if (ctx.scene.state.nextStep === "awaitingInfo") {
     const inputText = ctx.message.text;
@@ -44,17 +44,17 @@ scene.hears(/.*/, async (ctx) => {
     if (isNaN(rolls)) {
       await ctx.deleteMessage();
       return await ctx.reply(
-        "Введите соообщение в формате <кол-во бросков>"
+        "Введите соообщение в формате <кол-во монет>"
       );
     }
-    await changeRolls(ctx, rolls);
+    await changeBal(ctx, rolls);
   }
 });
 
-async function changeRolls(ctx, rolls) {
-  const newRolls = await updateRolls(ctx.session.user.tg_id, rolls);
-  if (newRolls === null) {
-    await ctx.reply(`Не удалось изменить броски\nПроверьте консоль`);
+async function changeBal(ctx, coins) {
+  const newCoins = await setBal(ctx.session.user.tg_id, coins);
+  if (newCoins === null) {
+    await ctx.reply(`Не удалось изменить баланс\nПроверьте консоль`);
     ctx.scene.state.nextStep = "awaitingName";
     return ctx.scene.enter("manageUsers");
   }
@@ -63,7 +63,7 @@ async function changeRolls(ctx, rolls) {
       ctx.session.user.nickname
         ? ctx.session.user.nickname
         : ctx.session.user.tg_id
-    } изменены броски!\nКоличество бросков: ${newRolls}`
+    } изменен баланс!\nКоличество монеток: ${newCoins}`
   );
   ctx.scene.state.nextStep = "awaitingName";
   ctx.scene.enter("manageUsers");

@@ -1,6 +1,18 @@
 const mysql = require("mysql2/promise");
+const crypto = require('crypto');
 
 let pool;
+
+function generatePromoCode(prefix) {
+  const randomPart = generateRandomString(8);
+  return `${prefix}_${randomPart}`;
+}
+
+function generateRandomString(length) {
+  return crypto.randomBytes(Math.ceil(length / 2))
+    .toString('hex')
+    .slice(0, length);
+}
 
 async function createConnection() {
   pool = mysql.createPool({
@@ -80,22 +92,58 @@ async function getAllPromoCodes(page, pageSize = 15) {
   }
 }
 
-async function searchUser(usertxt) {
+async function insertMultiplePromoCodes(prefix, count, coins) {
   try {
-    const [rows] = await pool.query(
-      "SELECT * FROM users WHERE tg_id = ? OR nickname = ?",
-      [usertxt, usertxt]
-    );
+    const codes = [];
+    const existingCodes = new Set();
 
-    if (rows.length > 0) {
-      const user = rows[0];
-      return user;
-    } else {
-      return false;
+    for (let i = 0; i < count; i++) {
+      let code;
+      do {
+        code = generatePromoCode(prefix);
+      } while (existingCodes.has(code));
+
+      existingCodes.add(code);
+      codes.push(code);
     }
+
+    const values = codes.map((code) => `('${code}', 1, ${coins})`).join(", ");
+    const query = `INSERT INTO promo_codes (code, activations, coins) VALUES ${values}`;
+
+    const [rows, fields] = await pool.query(query);
+
+    return rows.insertId;
   } catch (error) {
-    console.error("Ошибка при получении поиске пользователя:", error);
-    return null;
+    console.error("Ошибка при вставке данных:", error);
+    return false;
+  }
+}
+
+async function deletePromoCodesByPrefix(prefix) {
+  try {
+    const query = "DELETE FROM promo_codes WHERE code LIKE ?";
+    const prefixPattern = `${prefix}_%`;
+
+    const [rows, fields] = await pool.query(query, [prefixPattern]);
+
+    return rows.affectedRows;
+  } catch (error) {
+    console.error("Ошибка при удалении данных:", error);
+    return false;
+  }
+}
+
+async function countPromoCodesByPrefix(prefix) {
+  try {
+    const query = "SELECT COUNT(*) AS count FROM promo_codes WHERE code LIKE ?";
+    const prefixPattern = `${prefix}_%`;
+
+    const [rows, fields] = await pool.query(query, [prefixPattern]);
+
+    return rows[0].count;
+  } catch (error) {
+    console.error("Ошибка при подсчете данных:", error);
+    return false;
   }
 }
 
@@ -144,6 +192,30 @@ async function updateVipStatus(tgId, days) {
   }
 }
 
+async function setVipStatus(tgId, days) {
+  try {
+    const [rows, fields] = await pool.query(
+      'SELECT vip_status FROM users WHERE tg_id = ?',
+      [tgId]
+    );
+
+    if (rows.length === 0) {
+      console.error('Пользователь не найден');
+      return false;
+    }
+
+    await pool.query(
+      'UPDATE users SET vip_status = ? WHERE tg_id = ?',
+      [days, tgId]
+    );
+
+    return days;
+  } catch (error) {
+    console.error('Ошибка при обновлении vip_status:', error);
+    return null;
+  }
+}
+
 async function updateRolls(tgId, rolls) {
   try {
     const [rows, fields] = await pool.query(
@@ -164,6 +236,30 @@ async function updateRolls(tgId, rolls) {
     );
 
     return currentRolls + rolls;
+  } catch (error) {
+    console.error('Ошибка при обновлении rolls:', error);
+    return null;
+  }
+}
+
+async function setRolls(tgId, rolls) {
+  try {
+    const [rows, fields] = await pool.query(
+      'SELECT rolls FROM users WHERE tg_id = ?',
+      [tgId]
+    );
+
+    if (rows.length === 0) {
+      console.error('Пользователь не найден');
+      return false;
+    }
+
+    await pool.query(
+      'UPDATE users SET rolls = ? WHERE tg_id = ?',
+      [rolls, tgId]
+    );
+
+    return rolls;
   } catch (error) {
     console.error('Ошибка при обновлении rolls:', error);
     return null;
@@ -196,14 +292,45 @@ async function updateBal(tgId, coins) {
   }
 }
 
+async function setBal(tgId, coins) {
+  try {
+    const [rows, fields] = await pool.query(
+      'SELECT coins FROM users WHERE tg_id = ?',
+      [tgId]
+    );
+
+    if (rows.length === 0) {
+      console.error('Пользователь не найден');
+      return false;
+    }
+
+    await pool.query(
+      'UPDATE users SET coins = ? WHERE tg_id = ?',
+      [coins, tgId]
+    );
+
+    return coins;
+  } catch (error) {
+    console.error('Ошибка при обновлении coins:', error);
+    return null;
+  }
+}
+
+
 module.exports = {
   createConnection,
   insertPromoCode,
   getPromoCode,
   removePromoCode,
   getAllPromoCodes,
+  insertMultiplePromoCodes,
+  deletePromoCodesByPrefix,
+  countPromoCodesByPrefix,
   searchUser,
   updateVipStatus,
+  setVipStatus,
   updateRolls,
-  updateBal
+  setRolls,
+  updateBal,
+  setBal
 };

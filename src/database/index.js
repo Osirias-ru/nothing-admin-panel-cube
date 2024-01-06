@@ -19,7 +19,7 @@ async function createConnection() {
     host: "127.0.0.1",
     user: "root",
     password: "qwerty",
-    database: "cubictest",
+    database: "nothing_cube",
     port: "3306",
     waitForConnections: true,
     connectionLimit: 10,
@@ -29,7 +29,7 @@ async function createConnection() {
   return pool;
 }
 
-async function insertPromoCode(promoCode, activations, coins) {
+async function insertPromoCode(promoCode, type, activations, count) {
   try {
     const existingPromo = await getPromoCode(pool, promoCode);
 
@@ -39,8 +39,8 @@ async function insertPromoCode(promoCode, activations, coins) {
     }
 
     const [rows, fields] = await pool.query(
-      "INSERT INTO promo_codes (code, activations, coins) VALUES (?, ?, ?)",
-      [promoCode, activations, coins]
+      "INSERT INTO promocodes (name, type, activations, count) VALUES (?, ?, ?, ?)",
+      [promoCode, type, activations, count]
     );
 
     return rows.insertId;
@@ -53,7 +53,7 @@ async function insertPromoCode(promoCode, activations, coins) {
 async function getPromoCode(promoCode) {
   try {
     const [rows, fields] = await pool.query(
-      "SELECT activations, coins FROM promo_codes WHERE code = ?",
+      "SELECT activations, count FROM promocodes WHERE name = ?",
       [promoCode]
     );
 
@@ -67,7 +67,7 @@ async function getPromoCode(promoCode) {
 async function removePromoCode(promoCode) {
   try {
     const [rows, fields] = await pool.query(
-      "DELETE FROM promo_codes WHERE code = ?",
+      "DELETE FROM promocodes WHERE name = ?",
       [promoCode]
     );
 
@@ -82,7 +82,7 @@ async function getAllPromoCodes(page, pageSize = 15) {
   try {
     const offset = (page - 1) * pageSize;
     const [rows, fields] = await pool.query(
-      `SELECT code, activations, coins FROM promo_codes LIMIT ${pageSize} OFFSET ${offset}`
+      `SELECT name, activations, count FROM promocodes LIMIT ${pageSize} OFFSET ${offset}`
     );
 
     return rows;
@@ -92,12 +92,12 @@ async function getAllPromoCodes(page, pageSize = 15) {
   }
 }
 
-async function insertMultiplePromoCodes(prefix, count, coins) {
+async function insertMultiplePromoCodes(prefix, type, quantity, count) {
   try {
     const codes = [];
     const existingCodes = new Set();
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < quantity; i++) {
       let code;
       do {
         code = generatePromoCode(prefix);
@@ -107,12 +107,12 @@ async function insertMultiplePromoCodes(prefix, count, coins) {
       codes.push(code);
     }
 
-    const values = codes.map((code) => `('${code}', 1, ${coins})`).join(", ");
-    const query = `INSERT INTO promo_codes (code, activations, coins) VALUES ${values}`;
+    const values = codes.map((code) => `('${code}', '${type}', 1, ${count})`).join(", ");
+    const query = `INSERT INTO promocodes (name, type, activations, count) VALUES ${values}`;
 
     const [rows, fields] = await pool.query(query);
 
-    return rows.insertId;
+    return true;
   } catch (error) {
     console.error("Ошибка при вставке данных:", error);
     return false;
@@ -121,7 +121,7 @@ async function insertMultiplePromoCodes(prefix, count, coins) {
 
 async function deletePromoCodesByPrefix(prefix) {
   try {
-    const query = "DELETE FROM promo_codes WHERE code LIKE ?";
+    const query = "DELETE FROM promocodes WHERE name LIKE ?";
     const prefixPattern = `${prefix}_%`;
 
     const [rows, fields] = await pool.query(query, [prefixPattern]);
@@ -135,7 +135,7 @@ async function deletePromoCodesByPrefix(prefix) {
 
 async function countPromoCodesByPrefix(prefix) {
   try {
-    const query = "SELECT COUNT(*) AS count FROM promo_codes WHERE code LIKE ?";
+    const query = "SELECT COUNT(*) AS count FROM promocodes WHERE name LIKE ?";
     const prefixPattern = `${prefix}_%`;
 
     const [rows, fields] = await pool.query(query, [prefixPattern]);

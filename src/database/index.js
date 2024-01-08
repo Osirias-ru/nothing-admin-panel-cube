@@ -31,7 +31,7 @@ async function createConnection() {
 
 async function insertPromoCode(promoCode, type, activations, count) {
   try {
-    const existingPromo = await getPromoCode(pool, promoCode);
+    const existingPromo = await getPromoCode(promoCode);
 
     if (existingPromo) {
       console.log("Промокод уже существует.");
@@ -43,7 +43,7 @@ async function insertPromoCode(promoCode, type, activations, count) {
       [promoCode, type, activations, count]
     );
 
-    return rows.insertId;
+    return true;
   } catch (error) {
     console.error("Ошибка при вставке данных:", error);
     return false;
@@ -53,16 +53,21 @@ async function insertPromoCode(promoCode, type, activations, count) {
 async function getPromoCode(promoCode) {
   try {
     const [rows, fields] = await pool.query(
-      "SELECT activations, count FROM promocodes WHERE name = ?",
+      `SELECT * FROM promocodes WHERE name = ?`,
       [promoCode]
     );
 
-    return rows.length > 0 ? rows[0] : null;
+    if (rows && rows.length > 0) {
+      return rows[0];
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error("Ошибка при получении данных промокода:", error);
     return null;
   }
 }
+
 
 async function removePromoCode(promoCode) {
   try {
@@ -82,7 +87,7 @@ async function getAllPromoCodes(page, pageSize = 15) {
   try {
     const offset = (page - 1) * pageSize;
     const [rows, fields] = await pool.query(
-      `SELECT name, activations, count FROM promocodes LIMIT ${pageSize} OFFSET ${offset}`
+      `SELECT name, activations, type, count FROM promocodes LIMIT ${pageSize} OFFSET ${offset}`
     );
 
     return rows;

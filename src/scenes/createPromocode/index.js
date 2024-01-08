@@ -8,7 +8,7 @@ const keyboard = Markup.inlineKeyboard([
 
 const ChooseTypekeyboard = Markup.inlineKeyboard([
   [
-    Markup.button.callback("Монетки", "home"),
+    Markup.button.callback("Монетки", "coins"),
     Markup.button.callback("Гемы", "gems"),
     Markup.button.callback("Подписка", "vip_status"),
     Markup.button.callback("Броски", "rolls"),
@@ -99,7 +99,7 @@ scene.hears(/.*/, async (ctx) => {
         keyboard
       );
     }
-    const newPromo = insertPromoCode(
+    const newPromo = await insertPromoCode(
       ctx.session.promoCode,
       ctx.scene.state.type,
       activations,
@@ -107,7 +107,7 @@ scene.hears(/.*/, async (ctx) => {
     );
     if (!newPromo) {
       await ctx.reply(
-        `Не удалось создать промокод "${ctx.session.promoCode}"\nПроверьте консоль`
+        `Не удалось создать промокод "${ctx.session.promoCode}"\nПроверьте консоль и убедитесь что промокода с таким именем нет`
       );
       ctx.scene.state.nextStep = "awaitingName";
       return ctx.scene.enter("managePromo");

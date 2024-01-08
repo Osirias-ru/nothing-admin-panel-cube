@@ -45,7 +45,7 @@ async function sendPromoCodes(ctx) {
   
       if (promoCodesPage && promoCodesPage.length > 0) {
         promoCodesPage.forEach((promoCode) => {
-          message += `<code>${promoCode.code}</code> - активации: ${promoCode.activations}, монеты: ${promoCode.coins}\n`;
+          message += `<code>${promoCode.name}</code> - активации: ${promoCode.activations}, тип: ${promoCode.type}, награда: ${promoCode.count}\n`;
         });
       } else {
         message = "Промокоды отсутствуют на текущей странице.";

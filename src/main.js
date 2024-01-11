@@ -11,7 +11,7 @@ bot.use(stage.middleware());
 
 createConnection()
 
-const allowedUserIds = [1280865837, 1788067264, ];
+const allowedUserIds = [1280865837, 1788067264, 715074066];
 
 const checkUserId = (ctx, next) => {
     const userId = ctx.message.from.id;

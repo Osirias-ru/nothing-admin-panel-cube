@@ -16,7 +16,7 @@ scene.enter((ctx) => {
 scene.action("home", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  ctx.scene.enter("managePromo");
+  ctx.scene.enter("manageRef");
 });
 
 
@@ -35,7 +35,7 @@ scene.hears(/.*/, async (ctx) => {
         `Не удалось создать рефералку "${ref}"\nПроверьте консоль и убедитесь что рефералки с таким именем нет`
       );
       ctx.scene.state.nextStep = "awaitingName";
-      return ctx.scene.enter("managePromo");
+      return ctx.scene.enter("manageRef");
     }
   }
 });

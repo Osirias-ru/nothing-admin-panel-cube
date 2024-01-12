@@ -6,17 +6,21 @@ let pool;
 
 async function createConnection() {
   pool = mysql.createPool({
-    host: "127.0.0.1",
-    user: "root",
-    password: "qwerty",
-    database: "nothing_cube",
-    port: "3306",
+    host: process.env.mysql_host,
+    user: process.env.mysql_user,
+    password: process.env.mysql_password,
+    database: process.env.mysql_database,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
   });
 
   return pool;
+}
+
+function generateReferralLink(name) {
+    const uniqueCode = crypto.createHash('md5').update(name.toString()).digest('hex').slice(0, 6);
+    return uniqueCode;
 }
 
 async function insertRef(ref) {
@@ -27,6 +31,8 @@ async function insertRef(ref) {
       console.log("Промокод уже существует.");
       return null;
     }
+
+    const link = generateReferralLink(ref)
 
     const [rows, fields] = await pool.query(
       "INSERT INTO referrals (name, link) VALUES (?, ?)",
@@ -46,14 +52,28 @@ async function getRef(ref) {
       `SELECT * FROM referrals WHERE name = ?`,
       [ref]
     );
-
     if (rows && rows.length > 0) {
       return rows[0];
     } else {
       return false;
     }
   } catch (error) {
-    console.error("Ошибка при получении данных промокода:", error);
+    console.error("Ошибка при получении данных рефералки:", error);
+    return null;
+  }
+}
+
+async function getUsersByReferral(ref, page = 1, pageSize = 25) {
+  try {
+    const offset = (page - 1) * pageSize;
+    const [rows, fields] = await pool.query(
+      `SELECT * FROM user_statistics WHERE referal = ? LIMIT ? OFFSET ?`,
+      [ref, pageSize, offset]
+    );
+
+    return rows;
+  } catch (error) {
+    console.error("Ошибка при получении пользователей по рефералке:", error);
     return null;
   }
 }
@@ -77,7 +97,7 @@ async function getAllRefs(page, pageSize = 15) {
   try {
     const offset = (page - 1) * pageSize;
     const [rows, fields] = await pool.query(
-      `SELECT name, users, rolls FROM referrals LIMIT ${pageSize} OFFSET ${offset}`
+      `SELECT name, users FROM referrals LIMIT ${pageSize} OFFSET ${offset}`
     );
 
     return rows;
@@ -213,12 +233,8 @@ module.exports = {
   getRef,
   removeRef,
   getAllRefs,
-  insertMultiplePromoCodes,
-  deletePromoCodesByPrefix,
-  countPromoCodesByPrefix,
+  getUsersByReferral,
   searchUser,
-  updateVipStatus,
-  setVipStatus,
   updateRolls,
   setRolls,
   updateBal,

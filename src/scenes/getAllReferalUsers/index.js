@@ -1,17 +1,23 @@
 const { Markup, Scenes } = require("telegraf");
-const { getAllRefs } = require("../../database");
+const { getRef, getUsersByReferral } = require("../../database");
 
-const scene = new Scenes.BaseScene("listRef");
+const scene = new Scenes.BaseScene("getAllUserRef");
 
 scene.enter(async (ctx) => {
   ctx.scene.state.currentPage = 1;
-  const message = await ctx.reply("Получение рефералок...");
+  ctx.scene.state.nextStep = "awaitingName";
+
+  const txt = "Введите имя рефералки по которой нужно получить статистику"
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback("Назад", "home")],
+  ]);
+
+  const message = await ctx.reply(txt, keyboard);
   ctx.scene.state.messageId = message.message_id;
-  await sendPromoCodes(ctx);
 });
 
 async function canNavigateNext(ctx) {
-  const nextPageData = await getAllRefs(ctx.scene.state.currentPage + 1);
+  const nextPageData = await getUsersByReferral(ctx.scene.state.nextStep, ctx.scene.state.currentPage + 1);
   return nextPageData && nextPageData.length > 0;
 }
 
@@ -22,6 +28,21 @@ async function canNavigatePrev(ctx) {
 scene.action("home", async (ctx) => {
   await ctx.deleteMessage();
   ctx.scene.enter("manageRef");
+});
+
+scene.hears(/.*/, async (ctx) => {
+    if (ctx.scene.state.nextStep === "awaitingName") {
+      const ref = ctx.message.text;
+      const refData = await getRef(ref);
+      if(!refData) {
+        await ctx.reply(
+          `Рефералки "${ctx.message.text}" не существует`,
+        );
+        return ctx.scene.enter("manageRef");
+      }
+      ctx.scene.state.nextStep = ref;
+      await sendPromoCodes(ctx);
+    }
 });
 
 scene.action("nextPage", async (ctx) => {
@@ -41,11 +62,11 @@ scene.action("prevPage", async (ctx) => {
 async function sendPromoCodes(ctx) {
     try {
       let message = "";
-      const promoCodesPage = await getAllRefs(ctx.scene.state.currentPage);
+      const promoCodesPage = await getUsersByReferral(ctx.scene.state.nextStep, ctx.scene.state.currentPage);
   
       if (promoCodesPage && promoCodesPage.length > 0) {
-        promoCodesPage.forEach((ref) => {
-          message += `<code>${ref.name}</code> - пользователей: ${ref.users}\n`;
+        promoCodesPage.forEach((user) => {
+          message += `<code>${user.tg_id}</code> - бросков: ${user.rolls}, ранг: ${user.status}, побед: ${user.win}\n`;
         });
       } else {
         message = "Рефералки отсутствуют на текущей странице.";

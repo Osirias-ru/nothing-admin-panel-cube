@@ -12,6 +12,7 @@ scene.enter((ctx) => {
     ],
     [
       Markup.button.callback("Список промокодов", "listRef"),
+      Markup.button.callback("Список пользователей", "getAllUserRef"),
     ],
     [
       Markup.button.callback("Отмена", "home"),
@@ -30,9 +31,15 @@ scene.action("removeRef", async (ctx) => {
   await ctx.deleteMessage();
   ctx.scene.enter("removeRef");
 });
+
 scene.action("listRef", async (ctx) => {
   await ctx.deleteMessage();
   ctx.scene.enter("listRef");
+});
+
+scene.action("getAllUserRef", async (ctx) => {
+  await ctx.deleteMessage();
+  ctx.scene.enter("getAllUserRef");
 });
 
 scene.action("home", async (ctx) => {

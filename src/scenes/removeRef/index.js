@@ -17,7 +17,7 @@ scene.enter((ctx) => {
 scene.action("home", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  ctx.scene.enter("managePromo");
+  ctx.scene.enter("manageRef");
 });
 
 scene.hears(/.*/, async (ctx) => {
@@ -28,7 +28,7 @@ scene.hears(/.*/, async (ctx) => {
       await ctx.reply(
         `Рефералки "${ctx.message.text}" не существует`,
       );
-      return ctx.scene.enter("managePromo");
+      return ctx.scene.enter("manageRef");
     }
     ctx.scene.state.nextStep = ref;
 
@@ -53,7 +53,7 @@ scene.action("confirmRemove", async (ctx) => {
   const rRef = await removeRef(ref);
   if (!rRef)
     ctx.reply(`Не удалось удалить рефералку ${ref}. Проверьте консоль`);
-  ctx.scene.enter("managePromo");
+  ctx.scene.enter("manageRef");
 });
 
 module.exports = scene;

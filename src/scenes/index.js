@@ -3,23 +3,17 @@ const { Scenes } = require("telegraf");
 const stage = new Scenes.Stage([
     require('./start'),
     require('./manage'),
-    require('./managePromo'),
+    require('./manageRef'),
     require('./manageUsers'),
 
     require('./createRef'),
-    require('./removePromocode'),
-    require('./listPromocode'),
-
-    require('./createHeapPromo'),
-    require('./removeHeapPromo'),
+    require('./removeRef'),
+    require('./listRef'),
+    require('./getAllReferalUsers'),
 
     require('./manageBallance'),
     require('./setBal'),
     require('./changeBal'),
-
-    require('./manageSubscription'),
-    require('./setSubscribe'),
-    require('./changeSubscribe'),
 
     require('./manageRolls'),
     require('./setRolls'),

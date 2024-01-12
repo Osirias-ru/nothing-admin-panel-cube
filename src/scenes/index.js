@@ -20,6 +20,7 @@ const stage = new Scenes.Stage([
     require('./changeRolls'),
     
     require('./manageStatus'),
+    require('./setStatus'),
 
     require('./onDev'),
 ]);

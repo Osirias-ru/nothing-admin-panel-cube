@@ -28,7 +28,7 @@ async function insertRef(ref) {
     const existingPromo = await getRef(ref);
 
     if (existingPromo) {
-      console.log("Промокод уже существует.");
+      console.log("Рефералка уже существует.");
       return null;
     }
 

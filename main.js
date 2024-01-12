@@ -1,10 +1,9 @@
 require('dotenv').config();
 
-//const bot = require('./core/bot');
-const session = require('./core/session');
-const stage = require('./scenes');
-const startBot = require('./utils/startBot');
-const {createConnection} = require('./database')
+const session = require('./src/core/session');
+const stage = require('./src/scenes');
+const startBot = require('./src/utils/startBot');
+const {createConnection} = require('./src/database')
 const { Telegraf } = require('telegraf');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);

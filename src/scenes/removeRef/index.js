@@ -1,7 +1,7 @@
 const { Markup, Scenes } = require("telegraf");
 const { getRef, removeRef } = require("../../database");
 
-const scene = new Scenes.BaseScene("removePromo");
+const scene = new Scenes.BaseScene("removeRef");
 
 scene.enter((ctx) => {
   const message = `Что то не понравилось? Тогда просто удалим это!`;

@@ -26,7 +26,7 @@ scene.hears(/.*/, async (ctx) => {
     const newRef = await insertRef(ref);
     if(newRef) {
       await ctx.reply(
-        `Рефералка "${ref}" записана!`,
+        `Рефералка "${ref}" записана!\nСсылка - https://t.me/nothing_cube_game_bot?start=${newRef}`,
         keyboard
       );
     }

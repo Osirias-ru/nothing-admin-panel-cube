@@ -39,7 +39,7 @@ async function insertRef(ref) {
       [ref, link]
     );
 
-    return true;
+    return link;
   } catch (error) {
     console.error("Ошибка при вставке данных:", error);
     return false;

@@ -226,6 +226,29 @@ async function setBal(tgId, coins) {
   }
 }
 
+async function setStatus(tgId, status) {
+  try {
+    const [rows, fields] = await pool.query(
+      'SELECT status FROM user_statistics WHERE tg_id = ?',
+      [tgId]
+    );
+
+    if (rows.length === 0) {
+      console.error('Пользователь не найден');
+      return false;
+    }
+
+    await pool.query(
+      'UPDATE user_statistics SET status = ? WHERE tg_id = ?',
+      [status, tgId]
+    );
+
+    return status;
+  } catch (error) {
+    console.error('Ошибка при обновлении coins:', error);
+    return null;
+  }
+}
 
 module.exports = {
   createConnection,
@@ -238,5 +261,6 @@ module.exports = {
   updateRolls,
   setRolls,
   updateBal,
-  setBal
+  setBal,
+  setStatus
 };

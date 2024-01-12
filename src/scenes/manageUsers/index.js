@@ -7,7 +7,7 @@ scene.enter((ctx) => {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("Баланс", "manageBallance")],
-    [Markup.button.callback("Подписка", "manageSubscription")],
+    [Markup.button.callback("Статус", "manageStatus")],
     [Markup.button.callback("Крутки", "manageRolls")],
     [Markup.button.callback("Отмена", "home")],
   ]);
@@ -20,9 +20,9 @@ scene.action("manageBallance", async (ctx) => {
   ctx.scene.enter("manageBallance");
 });
 
-scene.action("manageSubscription", async (ctx) => {
+scene.action("manageStatus", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("manageSubscription");
+  ctx.scene.enter("manageStatus");
 });
 
 scene.action("manageRolls", async (ctx) => {

@@ -3,16 +3,6 @@ const crypto = require('crypto');
 
 let pool;
 
-function generatePromoCode(prefix) {
-  const randomPart = generateRandomString(8);
-  return `${prefix}_${randomPart}`;
-}
-
-function generateRandomString(length) {
-  return crypto.randomBytes(Math.ceil(length / 2))
-    .toString('hex')
-    .slice(0, length);
-}
 
 async function createConnection() {
   pool = mysql.createPool({
@@ -29,9 +19,9 @@ async function createConnection() {
   return pool;
 }
 
-async function insertPromoCode(promoCode, type, activations, count) {
+async function insertRef(ref) {
   try {
-    const existingPromo = await getPromoCode(promoCode);
+    const existingPromo = await getRef(ref);
 
     if (existingPromo) {
       console.log("Промокод уже существует.");
@@ -39,8 +29,8 @@ async function insertPromoCode(promoCode, type, activations, count) {
     }
 
     const [rows, fields] = await pool.query(
-      "INSERT INTO promocodes (name, type, activations, count) VALUES (?, ?, ?, ?)",
-      [promoCode, type, activations, count]
+      "INSERT INTO referrals (name, link) VALUES (?, ?)",
+      [ref, link]
     );
 
     return true;
@@ -50,11 +40,11 @@ async function insertPromoCode(promoCode, type, activations, count) {
   }
 }
 
-async function getPromoCode(promoCode) {
+async function getRef(ref) {
   try {
     const [rows, fields] = await pool.query(
-      `SELECT * FROM promocodes WHERE name = ?`,
-      [promoCode]
+      `SELECT * FROM referrals WHERE name = ?`,
+      [ref]
     );
 
     if (rows && rows.length > 0) {
@@ -69,11 +59,11 @@ async function getPromoCode(promoCode) {
 }
 
 
-async function removePromoCode(promoCode) {
+async function removeRef(ref) {
   try {
     const [rows, fields] = await pool.query(
-      "DELETE FROM promocodes WHERE name = ?",
-      [promoCode]
+      "DELETE FROM referrals WHERE name = ?",
+      [ref]
     );
 
     return true;
@@ -83,72 +73,17 @@ async function removePromoCode(promoCode) {
   }
 }
 
-async function getAllPromoCodes(page, pageSize = 15) {
+async function getAllRefs(page, pageSize = 15) {
   try {
     const offset = (page - 1) * pageSize;
     const [rows, fields] = await pool.query(
-      `SELECT name, activations, type, count FROM promocodes LIMIT ${pageSize} OFFSET ${offset}`
+      `SELECT name, users, rolls FROM referrals LIMIT ${pageSize} OFFSET ${offset}`
     );
 
     return rows;
   } catch (error) {
     console.error("Ошибка при получении всех промокодов:", error);
     return null;
-  }
-}
-
-async function insertMultiplePromoCodes(prefix, type, quantity, count) {
-  try {
-    const codes = [];
-    const existingCodes = new Set();
-
-    for (let i = 0; i < quantity; i++) {
-      let code;
-      do {
-        code = generatePromoCode(prefix);
-      } while (existingCodes.has(code));
-
-      existingCodes.add(code);
-      codes.push(code);
-    }
-
-    const values = codes.map((code) => `('${code}', '${type}', 1, ${count})`).join(", ");
-    const query = `INSERT INTO promocodes (name, type, activations, count) VALUES ${values}`;
-
-    const [rows, fields] = await pool.query(query);
-
-    return true;
-  } catch (error) {
-    console.error("Ошибка при вставке данных:", error);
-    return false;
-  }
-}
-
-async function deletePromoCodesByPrefix(prefix) {
-  try {
-    const query = "DELETE FROM promocodes WHERE name LIKE ?";
-    const prefixPattern = `${prefix}_%`;
-
-    const [rows, fields] = await pool.query(query, [prefixPattern]);
-
-    return rows.affectedRows;
-  } catch (error) {
-    console.error("Ошибка при удалении данных:", error);
-    return false;
-  }
-}
-
-async function countPromoCodesByPrefix(prefix) {
-  try {
-    const query = "SELECT COUNT(*) AS count FROM promocodes WHERE name LIKE ?";
-    const prefixPattern = `${prefix}_%`;
-
-    const [rows, fields] = await pool.query(query, [prefixPattern]);
-
-    return rows[0].count;
-  } catch (error) {
-    console.error("Ошибка при подсчете данных:", error);
-    return false;
   }
 }
 
@@ -167,56 +102,6 @@ async function searchUser(usertxt) {
     }
   } catch (error) {
     console.error("Ошибка при получении поиске пользователя:", error);
-    return null;
-  }
-}
-
-async function updateVipStatus(tgId, days) {
-  try {
-    const [rows, fields] = await pool.query(
-      'SELECT vip_status FROM users WHERE tg_id = ?',
-      [tgId]
-    );
-
-    if (rows.length === 0) {
-      console.error('Пользователь не найден');
-      return false;
-    }
-
-    const currentVipStatus = rows[0].vip_status;
-
-    await pool.query(
-      'UPDATE users SET vip_status = ? WHERE tg_id = ?',
-      [currentVipStatus + days, tgId]
-    );
-
-    return currentVipStatus + days;
-  } catch (error) {
-    console.error('Ошибка при обновлении vip_status:', error);
-    return null;
-  }
-}
-
-async function setVipStatus(tgId, days) {
-  try {
-    const [rows, fields] = await pool.query(
-      'SELECT vip_status FROM users WHERE tg_id = ?',
-      [tgId]
-    );
-
-    if (rows.length === 0) {
-      console.error('Пользователь не найден');
-      return false;
-    }
-
-    await pool.query(
-      'UPDATE users SET vip_status = ? WHERE tg_id = ?',
-      [days, tgId]
-    );
-
-    return days;
-  } catch (error) {
-    console.error('Ошибка при обновлении vip_status:', error);
     return null;
   }
 }
@@ -324,10 +209,10 @@ async function setBal(tgId, coins) {
 
 module.exports = {
   createConnection,
-  insertPromoCode,
-  getPromoCode,
-  removePromoCode,
-  getAllPromoCodes,
+  insertRef,
+  getRef,
+  removeRef,
+  getAllRefs,
   insertMultiplePromoCodes,
   deletePromoCodesByPrefix,
   countPromoCodesByPrefix,

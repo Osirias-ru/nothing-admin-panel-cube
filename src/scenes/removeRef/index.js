@@ -1,5 +1,5 @@
 const { Markup, Scenes } = require("telegraf");
-const { getPromoCode, removePromoCode } = require("../../database");
+const { getRef, removeRef } = require("../../database");
 
 const scene = new Scenes.BaseScene("removePromo");
 
@@ -22,15 +22,15 @@ scene.action("home", async (ctx) => {
 
 scene.hears(/.*/, async (ctx) => {
   if (ctx.scene.state.nextStep === "awaitingName") {
-    const promoData = await getPromoCode(ctx.message.text);
-    const promoCode = ctx.message.text;
-    if(!promoData) {
+    const ref = ctx.message.text;
+    const refData = await getRef(ref);
+    if(!refData) {
       await ctx.reply(
-        `Промокода "${ctx.message.text}" не существует`,
+        `Рефералки "${ctx.message.text}" не существует`,
       );
       return ctx.scene.enter("managePromo");
     }
-    ctx.scene.state.nextStep = promoCode;
+    ctx.scene.state.nextStep = ref;
 
     const keyboard = Markup.inlineKeyboard([
       [
@@ -40,19 +40,19 @@ scene.hears(/.*/, async (ctx) => {
     ]);
 
     ctx.reply(
-      `Промокод "${promoCode}" - ${promoData.activations} активаций, ${promoData.coins} монет.\nВы точно хотите его удалить?`,
+      `Реферлка "${ref}" - ${refData.users} пользователей.\nВы точно хотите её удалить?`,
       keyboard
     );
   }
 });
 
 scene.action("confirmRemove", async (ctx) => {
-  const promoCode = ctx.scene.state.nextStep;
+  const ref = ctx.scene.state.nextStep;
   ctx.scene.state.nextStep = "awaitingName";
   await ctx.deleteMessage();
-  await removePromoCode(promoCode);
-  if (!removePromoCode)
-    ctx.reply(`Не удалось удалить промокод ${promoCode}. Проверьте консоль`);
+  const rRef = await removeRef(ref);
+  if (!rRef)
+    ctx.reply(`Не удалось удалить рефералку ${ref}. Проверьте консоль`);
   ctx.scene.enter("managePromo");
 });
 

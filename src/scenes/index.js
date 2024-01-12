@@ -6,7 +6,7 @@ const stage = new Scenes.Stage([
     require('./managePromo'),
     require('./manageUsers'),
 
-    require('./createPromocode'),
+    require('./createRef'),
     require('./removePromocode'),
     require('./listPromocode'),
 

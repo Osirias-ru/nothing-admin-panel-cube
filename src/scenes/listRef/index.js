@@ -5,7 +5,7 @@ const scene = new Scenes.BaseScene("listPromo");
 
 scene.enter(async (ctx) => {
   ctx.scene.state.currentPage = 1;
-  const message = await ctx.reply("Получение промокодов...");
+  const message = await ctx.reply("Получение рефералок...");
   ctx.scene.state.messageId = message.message_id;
   await sendPromoCodes(ctx);
 });
@@ -44,11 +44,11 @@ async function sendPromoCodes(ctx) {
       const promoCodesPage = await getAllPromoCodes(ctx.scene.state.currentPage);
   
       if (promoCodesPage && promoCodesPage.length > 0) {
-        promoCodesPage.forEach((promoCode) => {
-          message += `<code>${promoCode.name}</code> - активации: ${promoCode.activations}, тип: ${promoCode.type}, награда: ${promoCode.count}\n`;
+        promoCodesPage.forEach((ref) => {
+          message += `<code>${ref.name}</code> - пользователей: ${ref.users}\n`;
         });
       } else {
-        message = "Промокоды отсутствуют на текущей странице.";
+        message = "Рефералки отсутствуют на текущей странице.";
       }
   
       const canNavigatePrevValue = await canNavigatePrev(ctx);
@@ -79,7 +79,7 @@ async function sendPromoCodes(ctx) {
         { ...updatedKeyboard, disable_web_page_preview: true, parse_mode: "HTML",}
       );
     } catch (error) {
-      console.error("Произошла ошибка при отправке промокодов:", error);
+      console.error("Произошла ошибка при отправке рефералок:", error);
     }
   }
   

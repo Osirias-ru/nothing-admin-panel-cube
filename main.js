@@ -11,14 +11,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(session);
 bot.use(stage.middleware());
 
-createConnection();
-
 const allAllowedUserIds = [1280865837, 1788067264, 715074066];
-const supportsIDs = [
-  1032527933, 5783423792, 1023140548, 757164729, 5152121100, 1214281828,
-  1226663482, 5367089466, 6616756525, 5140781119, 5578765515, 5537871320,
-  1786645312, 872845362, 1499163175, 1580601460,
-];
+const supportsIDs = process.env.SUPPORTS_IDS.split(',').map(Number);
 
 const checkUserId = (ctx, next) => {
   const userId = ctx.message.from.id;
@@ -36,4 +30,11 @@ const checkUserId = (ctx, next) => {
 
 bot.command("start", checkUserId, (ctx) => ctx.scene.enter("start"));
 
-startBot(bot);
+createConnection()
+  .then(() => {
+    console.log("Connected to the database");
+    startBot(bot);
+  })
+  .catch((error) => console.error("Error connecting to the database:", error));
+
+bot.catch((error) => console.error("Telegraf error:", error));

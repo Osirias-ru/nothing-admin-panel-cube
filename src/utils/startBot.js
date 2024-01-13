@@ -1,11 +1,6 @@
-const startBot = async (bot, botConfig = {}) => {
-    try {
-        await bot.launch()
+const startBot = (bot, botConfig = {}) => {
+    bot.launch(botConfig)
         .then(() => console.log(`Bot @${bot.botInfo.username} started!`));
-    }
-    catch(e) {
-        console.error(e)
-    }
 };
 
 module.exports = startBot;

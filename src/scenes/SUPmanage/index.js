@@ -10,7 +10,7 @@ scene.enter((ctx) => {
     [Markup.button.callback("Статус", "manageStatus")],
     [Markup.button.callback("Крутки", "manageRolls")],
   ]);
-  
+
   ctx.reply(message, keyboard);
 });
 

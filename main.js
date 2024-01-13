@@ -33,13 +33,13 @@ const checkUserId = (ctx, next) => {
   }
 };
 
-bot.command("start", checkUserId, (ctx) => ctx.scene.enter("start"));
+bot.command('start', checkUserId, (ctx) => ctx.scene.enter('start'));
 
 createConnection()
   .then(async () => {
     console.log("Connected to the database");
     console.log("Включение бота")
-    await startBot(bot);
+    bot.launch()
   })
   .catch((error) => console.error("Error connecting to the database:", error));
 

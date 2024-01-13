@@ -18,6 +18,7 @@ const supportsAccountsUserIds = process.env.SUPPROTS.split(",")
 const supportsIDs = supportsAccountsUserIds.map(str => parseInt(str, 10));
 console.log(process.env.SUPPROTS.split(","))
 console.log(supportsIDs)
+console.log(supportsIDs.includes(1032527933))
 
 const checkUserId = (ctx, next) => {
     const userId = ctx.message.from.id;
@@ -25,7 +26,6 @@ const checkUserId = (ctx, next) => {
     if (allAllowedUserIds.includes(userId)) {
       return next();
     } else if (supportsIDs.includes(userId)){
-      console.log("Сука работай")
       return ctx.scene.enter('SUPmanage')
     } else {
       ctx.reply('Что это мы тут забыли? Начитерить хотим, да?\nДавай, это, брысь');

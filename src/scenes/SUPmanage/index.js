@@ -3,29 +3,31 @@ const { Markup, Scenes } = require("telegraf");
 const scene = new Scenes.BaseScene("SUPmanage");
 
 scene.enter((ctx) => {
-  const message = `Управление промокодами и данными пользователей`;
+  const message = `Управление пользователями`;
 
   const keyboard = Markup.inlineKeyboard([
-    [
-      Markup.button.callback("Пользователи", "manageUsers"),
-    ],
-    [
-      Markup.button.callback("Назад", "home"),
-    ],
+    [Markup.button.callback("Баланс", "manageBallance")],
+    [Markup.button.callback("Статус", "manageStatus")],
+    [Markup.button.callback("Крутки", "manageRolls")],
   ]);
 
   ctx.reply(message, keyboard);
 });
 
-
-scene.action("manageUsers", async (ctx) => {
+scene.action("manageBallance", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("manageUsers");
+  ctx.scene.enter("manageBallance");
 });
 
-scene.action("home", async (ctx) => {
+scene.action("manageStatus", async (ctx) => {
   await ctx.deleteMessage();
-  ctx.scene.enter("start");
+  ctx.scene.enter("manageStatus");
 });
+
+scene.action("manageRolls", async (ctx) => {
+  await ctx.deleteMessage();
+  ctx.scene.enter("manageRolls");
+});
+
 
 module.exports = scene;

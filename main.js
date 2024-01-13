@@ -13,13 +13,18 @@ bot.use(stage.middleware());
 
 const allAllowedUserIds = [1280865837, 1788067264, 715074066];
 const supportsIDs = process.env.SUPPORTS_IDS.split(',').map(Number);
+console.log(supportsIDs)
 
 const checkUserId = (ctx, next) => {
+  console.log("Проверка id")
   const userId = ctx.message.from.id;
+  console.log("id-",userId)
 
   if (allAllowedUserIds.includes(userId)) {
+    console.log("Админ")
     return next();
   } else if (supportsIDs.includes(userId)) {
+    console.log("Сапорт")
     return ctx.scene.enter("SUPmanage");
   } else {
     ctx.reply(
@@ -31,9 +36,10 @@ const checkUserId = (ctx, next) => {
 bot.command("start", checkUserId, (ctx) => ctx.scene.enter("start"));
 
 createConnection()
-  .then(() => {
+  .then(async () => {
     console.log("Connected to the database");
-    startBot(bot);
+    console.log("Включение бота")
+    await startBot(bot);
   })
   .catch((error) => console.error("Error connecting to the database:", error));
 

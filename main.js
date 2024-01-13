@@ -25,7 +25,7 @@ const supportsAccountsUserIds = [
 const checkUserId = (ctx, next) => {
     const userId = ctx.message.from.id;
   
-    if (allowedUserIds.includes(userId)) {
+    if (allAllowedUserIds.includes(userId)) {
       return next();
     } else if (supportsAccounts.includes(userId)){
       return ctx.scene.enter('SUPmanage')

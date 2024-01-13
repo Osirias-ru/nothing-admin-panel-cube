@@ -69,7 +69,7 @@ async function sendPromoCodes(ctx) {
           message += `<code>${user.tg_id}</code> - бросков: ${user.rolls}, ранг: ${user.status}, побед: ${user.win}\n`;
         });
       } else {
-        message = "Рефералки отсутствуют на текущей странице.";
+        message = "Пользователи отсутствуют на текущей странице.";
       }
   
       const canNavigatePrevValue = await canNavigatePrev(ctx);

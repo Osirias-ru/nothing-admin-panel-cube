@@ -11,7 +11,7 @@ scene.enter((ctx) => {
       Markup.button.callback("Удалить рефералку", "removeRef"),
     ],
     [
-      Markup.button.callback("Список промокодов", "listRef"),
+      Markup.button.callback("Список рефералок", "listRef"),
       Markup.button.callback("Список пользователей", "getAllUserRef"),
     ],
     [

@@ -110,7 +110,7 @@ async function getAllRefs(page, pageSize = 15) {
 async function searchUser(usertxt) {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM users WHERE tg_id = ? OR nickname = ?",
+      "SELECT * FROM users WHERE tg_id LIKE ? OR nickname LIKE ?",
       [usertxt, usertxt]
     );
 
@@ -129,7 +129,7 @@ async function searchUser(usertxt) {
 async function updateRolls(tgId, rolls) {
   try {
     const [rows, fields] = await pool.query(
-      'SELECT rolls FROM users WHERE tg_id = ?',
+      'SELECT rolls FROM users WHERE tg_id LIKE ?',
       [tgId]
     );
 
@@ -141,7 +141,7 @@ async function updateRolls(tgId, rolls) {
     const currentRolls = rows[0].rolls;
 
     await pool.query(
-      'UPDATE users SET rolls = ? WHERE tg_id = ?',
+      'UPDATE users SET rolls = ? WHERE tg_id LIKE ?',
       [currentRolls + rolls, tgId]
     );
 
@@ -155,7 +155,7 @@ async function updateRolls(tgId, rolls) {
 async function setRolls(tgId, rolls) {
   try {
     const [rows, fields] = await pool.query(
-      'SELECT rolls FROM users WHERE tg_id = ?',
+      'SELECT rolls FROM users WHERE tg_id LIKE ?',
       [tgId]
     );
 
@@ -165,7 +165,7 @@ async function setRolls(tgId, rolls) {
     }
 
     await pool.query(
-      'UPDATE users SET rolls = ? WHERE tg_id = ?',
+      'UPDATE users SET rolls = ? WHERE tg_id LIKE ?',
       [rolls, tgId]
     );
 
@@ -179,7 +179,7 @@ async function setRolls(tgId, rolls) {
 async function updateBal(tgId, coins) {
   try {
     const [rows, fields] = await pool.query(
-      'SELECT coins FROM users WHERE tg_id = ?',
+      'SELECT coins FROM users WHERE tg_id LIKE ?',
       [tgId]
     );
 
@@ -191,7 +191,7 @@ async function updateBal(tgId, coins) {
     const currentCoins = rows[0].coins;
 
     await pool.query(
-      'UPDATE users SET coins = ? WHERE tg_id = ?',
+      'UPDATE users SET coins = ? WHERE tg_id LIKE ?',
       [currentCoins + coins, tgId]
     );
 
@@ -205,7 +205,7 @@ async function updateBal(tgId, coins) {
 async function setBal(tgId, coins) {
   try {
     const [rows, fields] = await pool.query(
-      'SELECT coins FROM users WHERE tg_id = ?',
+      'SELECT coins FROM users WHERE tg_id LIKE ?',
       [tgId]
     );
 
@@ -215,7 +215,7 @@ async function setBal(tgId, coins) {
     }
 
     await pool.query(
-      'UPDATE users SET coins = ? WHERE tg_id = ?',
+      'UPDATE users SET coins = ? WHERE tg_id LIKE ?',
       [coins, tgId]
     );
 
@@ -229,7 +229,7 @@ async function setBal(tgId, coins) {
 async function setStatus(tgId, status) {
   try {
     const [rows, fields] = await pool.query(
-      'SELECT status FROM user_statistics WHERE tg_id = ?',
+      'SELECT status FROM user_statistics WHERE tg_id LIKE ?',
       [tgId]
     );
 
@@ -239,7 +239,7 @@ async function setStatus(tgId, status) {
     }
 
     await pool.query(
-      'UPDATE user_statistics SET status = ? WHERE tg_id = ?',
+      'UPDATE user_statistics SET status = ? WHERE tg_id LIKE ?',
       [status, tgId]
     );
 

@@ -31,7 +31,7 @@ scene.action("home", async (ctx) => {
 
 scene.action("beginner", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'beginner');
+  const status = await setStatus(ctx.session.user, 'beginner');
 
   if (status === false) {
     await ctx.reply(`Не удалось выдать статус ${status}`);
@@ -44,7 +44,7 @@ scene.action("beginner", async (ctx) => {
 
 scene.action("silver", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'silver');
+  const status = await setStatus(ctx.session.user, 'silver');
 
   if (status === false) {
     await ctx.reply(`Не удалось выдать статус ${status}`);
@@ -57,7 +57,7 @@ scene.action("silver", async (ctx) => {
 
 scene.action("gold", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'gold');
+  const status = await setStatus(ctx.session.user, 'gold');
 
   if (status === false) {
     await ctx.reply(`Не удалось выдать статус ${status}`);
@@ -70,7 +70,7 @@ scene.action("gold", async (ctx) => {
 
 scene.action("platinum", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'platinum');
+  const status = await setStatus(ctx.session.user, 'platinum');
 
   if (status === false) {
     await ctx.reply(`Не удалось выдать статус ${status}`);
@@ -83,7 +83,7 @@ scene.action("platinum", async (ctx) => {
 
 scene.action("diamond", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'diamond');
+  const status = await setStatus(ctx.session.user, 'diamond');
 
   if (status === false) {
     await ctx.reply(`Не удалось выдать статус ${status}`);

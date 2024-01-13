@@ -106,7 +106,7 @@ scene.hears(/.*/, async (ctx) => {
       return ctx.scene.enter("manageUsers");
     }
 
-    ctx.session.user = userDB;
+    ctx.session.user = userDB.tg_id;
 
     await ctx.deleteMessage();
     await ctx.reply(

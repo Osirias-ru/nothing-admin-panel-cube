@@ -27,7 +27,7 @@ const checkUserId = (ctx, next) => {
   
     if (allAllowedUserIds.includes(userId)) {
       return next();
-    } else if (supportsAccounts.includes(userId)){
+    } else if (supportsAccountsUserIds.includes(userId)){
       return ctx.scene.enter('SUPmanage')
     } else {
       ctx.reply('Что это мы тут забыли? Начитерить хотим, да?\nДавай, это, брысь');

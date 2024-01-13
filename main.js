@@ -25,6 +25,7 @@ const checkUserId = (ctx, next) => {
     if (allAllowedUserIds.includes(userId)) {
       return next();
     } else if (supportsIDs.includes(userId)){
+      console.log("Сука работай")
       return ctx.scene.enter('SUPmanage')
     } else {
       ctx.reply('Что это мы тут забыли? Начитерить хотим, да?\nДавай, это, брысь');

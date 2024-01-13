@@ -15,14 +15,16 @@ createConnection()
 
 const allAllowedUserIds = [1280865837, 1788067264, 715074066];
 const supportsAccountsUserIds = process.env.SUPPROTS.split(",")
+const supportsIDs = supportsAccountsUserIds.map(str => parseInt(str, 10));
 console.log(process.env.SUPPROTS.split(","))
+console.log(supportsIDs)
 
 const checkUserId = (ctx, next) => {
     const userId = ctx.message.from.id;
   
     if (allAllowedUserIds.includes(userId)) {
       return next();
-    } else if (supportsAccountsUserIds.includes(userId)){
+    } else if (supportsIDs.includes(userId)){
       return ctx.scene.enter('SUPmanage')
     } else {
       ctx.reply('Что это мы тут забыли? Начитерить хотим, да?\nДавай, это, брысь');

@@ -3,6 +3,7 @@ const { Scenes } = require("telegraf");
 const stage = new Scenes.Stage([
     require('./start'),
     require('./manage'),
+    require('./SUPmanage'),
     require('./manageRef'),
     require('./manageUsers'),
 

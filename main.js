@@ -33,7 +33,9 @@ const checkUserId = (ctx, next) => {
   }
 };
 
-bot.command('start', checkUserId, (ctx) => ctx.scene.enter('start'));
+bot.command('start', checkUserId, (ctx) => {
+  return ctx.scene.enter('start');
+});
 
 createConnection()
   .then(async () => {

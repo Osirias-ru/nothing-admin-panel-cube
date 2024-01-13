@@ -7,7 +7,7 @@ const keyboard = Markup.inlineKeyboard([
 ]);
 
 const keyboard_status = Markup.inlineKeyboard([
-  [Markup.button.callback("Beginer", "beginer")],
+  [Markup.button.callback("Beginer", "beginner")],
   [Markup.button.callback("Silver", "silver")],
   [Markup.button.callback("Gold", "gold")],
   [Markup.button.callback("Platinum", "platinum")],
@@ -29,12 +29,12 @@ scene.action("home", async (ctx) => {
   ctx.scene.enter("manageUsers");
 });
 
-scene.action("beginer", async (ctx) => {
+scene.action("beginner", async (ctx) => {
   ctx.scene.state.nextStep = "awaitingName";
-  const status = setStatus(ctx.session.user, 'beginer');
+  const status = setStatus(ctx.session.user, 'beginner');
 
   if (status === false) {
-    await ctx.reply(`Не удалось выдать статус ${user}`);
+    await ctx.reply(`Не удалось выдать статус ${status}`);
     return ctx.scene.enter("manageUsers");
   } 
 
@@ -47,7 +47,7 @@ scene.action("silver", async (ctx) => {
   const status = setStatus(ctx.session.user, 'silver');
 
   if (status === false) {
-    await ctx.reply(`Не удалось выдать статус ${user}`);
+    await ctx.reply(`Не удалось выдать статус ${status}`);
     return ctx.scene.enter("manageUsers");
   } 
 
@@ -60,7 +60,7 @@ scene.action("gold", async (ctx) => {
   const status = setStatus(ctx.session.user, 'gold');
 
   if (status === false) {
-    await ctx.reply(`Не удалось выдать статус ${user}`);
+    await ctx.reply(`Не удалось выдать статус ${status}`);
     return ctx.scene.enter("manageUsers");
   }
 
@@ -73,7 +73,7 @@ scene.action("platinum", async (ctx) => {
   const status = setStatus(ctx.session.user, 'platinum');
 
   if (status === false) {
-    await ctx.reply(`Не удалось выдать статус ${user}`);
+    await ctx.reply(`Не удалось выдать статус ${status}`);
     return ctx.scene.enter("manageUsers");
   }
 
@@ -86,7 +86,7 @@ scene.action("diamond", async (ctx) => {
   const status = setStatus(ctx.session.user, 'diamond');
 
   if (status === false) {
-    await ctx.reply(`Не удалось выдать статус ${user}`);
+    await ctx.reply(`Не удалось выдать статус ${status}`);
     return ctx.scene.enter("manageUsers");
   }
 
